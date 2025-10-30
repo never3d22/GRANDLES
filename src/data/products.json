@@ -1,0 +1,56 @@
+[
+  {
+    "id": "coffee-espresso",
+    "categoryId": "beverages",
+    "name": "Эспрессо",
+    "description": "Кофе эспрессо средней обжарки",
+    "price": 120,
+    "image": "/images/coffee-espresso.jpg",
+    "isAvailable": true
+  },
+  {
+    "id": "coffee-latte",
+    "categoryId": "beverages",
+    "name": "Латте",
+    "description": "Классический латте с молоком",
+    "price": 180,
+    "image": "/images/coffee-latte.jpg",
+    "isAvailable": true
+  },
+  {
+    "id": "tea-green",
+    "categoryId": "beverages",
+    "name": "Зеленый чай",
+    "description": "Листовой зеленый чай",
+    "price": 90,
+    "image": "/images/tea-green.jpg",
+    "isAvailable": true
+  },
+  {
+    "id": "baguette-classic",
+    "categoryId": "bakery",
+    "name": "Багет",
+    "description": "Свежий хрустящий багет",
+    "price": 70,
+    "image": "/images/baguette.jpg",
+    "isAvailable": true
+  },
+  {
+    "id": "croissant-butter",
+    "categoryId": "bakery",
+    "name": "Круассан",
+    "description": "Классический сливочный круассан",
+    "price": 95,
+    "image": "/images/croissant.jpg",
+    "isAvailable": false
+  },
+  {
+    "id": "cheese-cheddar",
+    "categoryId": "grocery",
+    "name": "Чеддер",
+    "description": "Сыр Чеддер 200 г",
+    "price": 210,
+    "image": "/images/cheese-cheddar.jpg",
+    "isAvailable": true
+  }
+]
