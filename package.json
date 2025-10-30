@@ -1,0 +1,20 @@
+{
+  "name": "grandles",
+  "version": "1.0.0",
+  "description": "Пример API для приложения заказа товаров с MODX",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "keywords": [
+    "modx",
+    "order",
+    "api",
+    "pickup",
+    "delivery"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
