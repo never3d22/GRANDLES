@@ -1,0 +1,31 @@
+{
+  "pickupPoints": [
+    {
+      "id": "pickup-central",
+      "name": "ПВЗ Центральный",
+      "address": "ул. Ленина, 12",
+      "schedule": "Пн-Вс 09:00-20:00"
+    },
+    {
+      "id": "pickup-mall",
+      "name": "ПВЗ ТРЦ",
+      "address": "ТРЦ \"Сити\", 2 этаж",
+      "schedule": "Пн-Вс 10:00-22:00"
+    }
+  ],
+  "deliveryZones": [
+    {
+      "id": "zone-central",
+      "name": "Центр",
+      "description": "Доставка в пределах 5 км",
+      "price": 200
+    },
+    {
+      "id": "zone-suburb",
+      "name": "Пригород",
+      "description": "Доставка в пределах 15 км",
+      "price": 350
+    }
+  ],
+  "deliveryNotes": "Бесплатная доставка при заказе от 1500 ₽"
+}
