@@ -6,6 +6,43 @@ const { URL } = require('url');
 const categories = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'categories.json'), 'utf-8'));
 const products = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'products.json'), 'utf-8'));
 const fulfillment = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'fulfillment.json'), 'utf-8'));
+const PUBLIC_DIR = path.join(__dirname, 'public');
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+};
+
+function withinDirectory(parent, target) {
+  const relative = path.relative(parent, target);
+  return !relative.startsWith('..') && !path.isAbsolute(relative);
+}
+
+function serveStaticFile(res, filePath) {
+  let data;
+  try {
+    data = fs.readFileSync(filePath);
+  } catch (error) {
+    return false;
+  }
+
+  const extension = path.extname(filePath);
+  const contentType = MIME_TYPES[extension] || 'application/octet-stream';
+  res.writeHead(200, {
+    'Content-Type': contentType,
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  });
+  res.end(data);
+  return true;
+}
 
 const PORT = process.env.PORT || 3000;
 const ALLOWED_METHODS = ['GET', 'POST', 'OPTIONS'];
@@ -124,6 +161,16 @@ const server = http.createServer(async (req, res) => {
   const pathname = requestUrl.pathname.replace(/\/$/, '') || '/';
 
   try {
+    if (req.method === 'GET') {
+      const relativePath = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
+      const candidatePath = path.normalize(path.join(PUBLIC_DIR, relativePath));
+
+      if (withinDirectory(PUBLIC_DIR, candidatePath) && fs.existsSync(candidatePath) && fs.statSync(candidatePath).isFile()) {
+        serveStaticFile(res, candidatePath);
+        return;
+      }
+    }
+
     if (req.method === 'GET' && pathname === '/api/health') {
       sendJson(res, 200, { status: 'ok' });
       return;

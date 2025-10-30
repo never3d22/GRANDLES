@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Тестовый интерфейс заказа</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #f7f7f7;
+      color: #1d1d1f;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.95), rgba(230, 230, 230, 0.9));
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #1d1d1f;
+      color: #fff;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    main {
+      flex: 1;
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    section {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #0b5fff;
+    }
+
+    .list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .category-button,
+    .product-card button,
+    .cart-actions button,
+    .submit-button {
+      background: linear-gradient(135deg, #0b5fff, #2b8eff);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .category-button:hover,
+    .product-card button:hover,
+    .cart-actions button:hover,
+    .submit-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(11, 95, 255, 0.3);
+    }
+
+    .category-button.active {
+      background: #172554;
+    }
+
+    .product-card {
+      border: 1px solid rgba(11, 95, 255, 0.12);
+      border-radius: 14px;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.96);
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .product-card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .product-card .price {
+      font-weight: 600;
+      color: #0b5fff;
+    }
+
+    .product-card .status {
+      font-size: 0.85rem;
+      color: #3f3f46;
+    }
+
+    .product-card button {
+      justify-self: start;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    table th,
+    table td {
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(11, 95, 255, 0.08);
+    }
+
+    table th {
+      color: #3f3f46;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #71717a;
+      padding: 1rem 0;
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    label {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    input,
+    textarea,
+    select {
+      border-radius: 12px;
+      border: 1px solid rgba(11, 95, 255, 0.18);
+      padding: 0.6rem 0.75rem;
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.95);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #0b5fff;
+      box-shadow: 0 0 0 3px rgba(11, 95, 255, 0.15);
+      outline: none;
+    }
+
+    .fulfillment-options {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .fulfillment-option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(11, 95, 255, 0.12);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .fulfillment-option input[type="radio"] {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .totals {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .message {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      background: rgba(11, 95, 255, 0.12);
+      color: #172554;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #991b1b;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        padding: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Тестирование API заказов</h1>
+    <p>Выбирайте категории и товары, формируйте корзину и отправляйте заказ без онлайн-оплаты.</p>
+  </header>
+  <main>
+    <section>
+      <h2>Категории</h2>
+      <div id="categories" class="list"></div>
+    </section>
+
+    <section>
+      <h2>Товары</h2>
+      <div id="products" class="list"></div>
+    </section>
+
+    <section>
+      <h2>Корзина</h2>
+      <div id="cart"></div>
+      <div class="cart-actions" style="margin-top: 1rem; display: flex; gap: 0.75rem;">
+        <button id="clear-cart" type="button">Очистить корзину</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Оформление</h2>
+      <form id="order-form">
+        <label>
+          Имя
+          <input type="text" id="customer-name" required placeholder="Иван Иванов" />
+        </label>
+        <label>
+          Телефон
+          <input type="tel" id="customer-phone" required placeholder="+7 999 000-00-00" />
+        </label>
+        <label>
+          Электронная почта (необязательно)
+          <input type="email" id="customer-email" placeholder="user@example.com" />
+        </label>
+        <label>
+          Комментарий к заказу
+          <textarea id="order-comment" rows="3" placeholder="Пожелания, дата доставки и т.д."></textarea>
+        </label>
+
+        <div>
+          <h3 style="margin-bottom: 0.5rem;">Способ получения</h3>
+          <div id="fulfillment" class="fulfillment-options"></div>
+        </div>
+
+        <label id="address-wrapper" style="display: none;">
+          Адрес доставки
+          <input type="text" id="customer-address" placeholder="г. Москва, ул. Примерная, д. 10" />
+        </label>
+
+        <div class="totals">
+          <span>Итого к оплате:</span>
+          <span id="cart-total">0 ₽</span>
+        </div>
+
+        <button class="submit-button" type="submit">Отправить заказ</button>
+      </form>
+      <div id="message" style="margin-top: 1rem; display: none;"></div>
+    </section>
+  </main>
+  <footer>
+    REST API работает на <code>/api</code>. Интерфейс предназначен для тестирования интеграции с MODX.
+  </footer>
+
+  <script>
+    const currency = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' });
+    const state = {
+      categories: [],
+      products: [],
+      cart: [],
+      fulfillment: null,
+      selectedCategory: null,
+      fulfillmentMode: null,
+      fulfillmentOptionId: null,
+    };
+
+    async function fetchJson(url) {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Ошибка запроса: ${response.status}`);
+      }
+      return response.json();
+    }
+
+    function setMessage(text, isError = false) {
+      const box = document.getElementById('message');
+      box.textContent = text;
+      box.className = isError ? 'message error' : 'message';
+      box.style.display = text ? 'block' : 'none';
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categories');
+      container.innerHTML = '';
+      if (!state.categories.length) {
+        container.innerHTML = '<p class="empty-state">Категории не найдены</p>';
+        return;
+      }
+      state.categories.forEach(category => {
+        const button = document.createElement('button');
+        button.className = 'category-button' + (state.selectedCategory === category.id ? ' active' : '');
+        button.textContent = category.name;
+        button.type = 'button';
+        button.addEventListener('click', () => {
+          state.selectedCategory = category.id;
+          renderCategories();
+          loadProducts(category.id);
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function renderProducts() {
+      const container = document.getElementById('products');
+      container.innerHTML = '';
+      if (!state.products.length) {
+        container.innerHTML = '<p class="empty-state">Выберите категорию, чтобы увидеть товары</p>';
+        return;
+      }
+      state.products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        const title = document.createElement('h3');
+        title.textContent = product.name;
+        card.appendChild(title);
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = currency.format(product.price);
+        card.appendChild(price);
+
+        const desc = document.createElement('p');
+        desc.textContent = product.description;
+        card.appendChild(desc);
+
+        const status = document.createElement('div');
+        status.className = 'status';
+        status.textContent = product.isAvailable ? 'В наличии' : 'Нет на складе';
+        card.appendChild(status);
+
+        const quantityWrapper = document.createElement('div');
+        quantityWrapper.style.display = 'flex';
+        quantityWrapper.style.gap = '0.5rem';
+        quantityWrapper.style.alignItems = 'center';
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.min = '1';
+        quantityInput.value = '1';
+        quantityInput.style.width = '80px';
+        quantityWrapper.appendChild(quantityInput);
+
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Добавить в корзину';
+        addButton.disabled = !product.isAvailable;
+        addButton.addEventListener('click', () => {
+          const quantity = Number(quantityInput.value) || 1;
+          addToCart(product, quantity);
+        });
+        quantityWrapper.appendChild(addButton);
+
+        card.appendChild(quantityWrapper);
+        container.appendChild(card);
+      });
+    }
+
+    function addToCart(product, quantity) {
+      const existing = state.cart.find(item => item.product.id === product.id);
+      if (existing) {
+        existing.quantity += quantity;
+      } else {
+        state.cart.push({ product, quantity });
+      }
+      renderCart();
+    }
+
+    function removeFromCart(productId) {
+      state.cart = state.cart.filter(item => item.product.id !== productId);
+      renderCart();
+    }
+
+    function updateCartQuantity(productId, quantity) {
+      const item = state.cart.find(entry => entry.product.id === productId);
+      if (!item) return;
+      item.quantity = quantity;
+      renderCart();
+    }
+
+    function calculateTotals() {
+      const subtotal = state.cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+      const delivery = (() => {
+        if (!state.fulfillmentMode || !state.fulfillmentOptionId || !state.fulfillment) {
+          return 0;
+        }
+        if (state.fulfillmentMode === 'pickup') {
+          return 0;
+        }
+        const zone = state.fulfillment.deliveryZones.find(z => z.id === state.fulfillmentOptionId);
+        return zone ? zone.price : 0;
+      })();
+      return { subtotal, delivery, total: subtotal + delivery };
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart');
+      container.innerHTML = '';
+
+      if (!state.cart.length) {
+        container.innerHTML = '<p class="empty-state">Корзина пуста</p>';
+      } else {
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Цена</th>
+              <th>Кол-во</th>
+              <th>Сумма</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        `;
+        const tbody = table.querySelector('tbody');
+        state.cart.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.product.name}</td>
+            <td>${currency.format(item.product.price)}</td>
+            <td></td>
+            <td>${currency.format(item.product.price * item.quantity)}</td>
+            <td style="text-align: right;"></td>
+          `;
+          const quantityInput = document.createElement('input');
+          quantityInput.type = 'number';
+          quantityInput.min = '1';
+          quantityInput.value = item.quantity;
+          quantityInput.style.width = '70px';
+          quantityInput.addEventListener('change', () => {
+            const value = Math.max(1, Number(quantityInput.value) || 1);
+            updateCartQuantity(item.product.id, value);
+          });
+          row.children[2].appendChild(quantityInput);
+
+          const removeButton = document.createElement('button');
+          removeButton.textContent = 'Удалить';
+          removeButton.type = 'button';
+          removeButton.addEventListener('click', () => removeFromCart(item.product.id));
+          row.children[4].appendChild(removeButton);
+
+          tbody.appendChild(row);
+        });
+        container.appendChild(table);
+      }
+
+      const { total } = calculateTotals();
+      document.getElementById('cart-total').textContent = currency.format(total);
+    }
+
+    function renderFulfillment() {
+      const container = document.getElementById('fulfillment');
+      container.innerHTML = '';
+      if (!state.fulfillment) {
+        container.innerHTML = '<p class="empty-state">Варианты получения не загружены</p>';
+        return;
+      }
+
+      const pickupOptions = state.fulfillment.pickupPoints || [];
+      const deliveryOptions = state.fulfillment.deliveryZones || [];
+
+      if (!pickupOptions.length && !deliveryOptions.length) {
+        container.innerHTML = '<p class="empty-state">Настройки доставки не найдены</p>';
+        return;
+      }
+
+      const createOption = (mode, option, description) => {
+        const wrapper = document.createElement('label');
+        wrapper.className = 'fulfillment-option';
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'fulfillment';
+        radio.value = `${mode}:${option.id}`;
+        radio.checked = state.fulfillmentMode === mode && state.fulfillmentOptionId === option.id;
+        radio.addEventListener('change', () => {
+          state.fulfillmentMode = mode;
+          state.fulfillmentOptionId = option.id;
+          document.getElementById('address-wrapper').style.display = mode === 'delivery' ? 'block' : 'none';
+          renderCart();
+        });
+        wrapper.appendChild(radio);
+
+        const info = document.createElement('div');
+        info.style.display = 'grid';
+        info.style.gap = '0.2rem';
+        const title = document.createElement('strong');
+        title.textContent = option.name;
+        info.appendChild(title);
+        if (description) {
+          const desc = document.createElement('span');
+          desc.textContent = description;
+          desc.style.fontSize = '0.85rem';
+          desc.style.color = '#4b5563';
+          info.appendChild(desc);
+        }
+        wrapper.appendChild(info);
+        return wrapper;
+      };
+
+      pickupOptions.forEach(point => {
+        const desc = `${point.address}. График: ${point.hours}`;
+        container.appendChild(createOption('pickup', point, desc));
+      });
+
+      deliveryOptions.forEach(zone => {
+        const desc = `${zone.description}. Стоимость: ${currency.format(zone.price)}`;
+        container.appendChild(createOption('delivery', zone, desc));
+      });
+    }
+
+    async function loadCategories() {
+      try {
+        const data = await fetchJson('/api/categories');
+        state.categories = data.categories || [];
+        state.selectedCategory = state.categories.length ? state.categories[0].id : null;
+        renderCategories();
+        if (state.selectedCategory) {
+          await loadProducts(state.selectedCategory);
+        } else {
+          renderProducts();
+        }
+      } catch (error) {
+        setMessage(error.message, true);
+      }
+    }
+
+    async function loadProducts(categoryId) {
+      try {
+        const data = await fetchJson(`/api/products?categoryId=${encodeURIComponent(categoryId)}&onlyAvailable=false`);
+        state.products = data.products || [];
+        renderProducts();
+      } catch (error) {
+        setMessage(error.message, true);
+      }
+    }
+
+    async function loadFulfillment() {
+      try {
+        const data = await fetchJson('/api/fulfillment-options');
+        state.fulfillment = data;
+        if (data.pickupPoints && data.pickupPoints.length) {
+          state.fulfillmentMode = 'pickup';
+          state.fulfillmentOptionId = data.pickupPoints[0].id;
+        } else if (data.deliveryZones && data.deliveryZones.length) {
+          state.fulfillmentMode = 'delivery';
+          state.fulfillmentOptionId = data.deliveryZones[0].id;
+        }
+        renderFulfillment();
+        document.getElementById('address-wrapper').style.display = state.fulfillmentMode === 'delivery' ? 'block' : 'none';
+      } catch (error) {
+        setMessage(error.message, true);
+      }
+    }
+
+    async function submitOrder(event) {
+      event.preventDefault();
+      setMessage('');
+
+      if (!state.cart.length) {
+        setMessage('Сначала добавьте товары в корзину.', true);
+        return;
+      }
+
+      if (!state.fulfillmentMode || !state.fulfillmentOptionId) {
+        setMessage('Выберите способ получения заказа.', true);
+        return;
+      }
+
+      const payload = {
+        cartItems: state.cart.map(item => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+        customer: {
+          name: document.getElementById('customer-name').value,
+          phone: document.getElementById('customer-phone').value,
+          email: document.getElementById('customer-email').value || undefined,
+          address: document.getElementById('customer-address').value || undefined,
+        },
+        fulfillmentMode: state.fulfillmentMode,
+        fulfillmentOptionId: state.fulfillmentOptionId,
+        comment: document.getElementById('order-comment').value,
+      };
+
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || 'Не удалось оформить заказ');
+        }
+
+        setMessage(data.message || 'Заказ успешно отправлен.');
+        state.cart = [];
+        renderCart();
+        document.getElementById('order-form').reset();
+        document.getElementById('address-wrapper').style.display = state.fulfillmentMode === 'delivery' ? 'block' : 'none';
+      } catch (error) {
+        setMessage(error.message, true);
+      }
+    }
+
+    document.getElementById('order-form').addEventListener('submit', submitOrder);
+    document.getElementById('clear-cart').addEventListener('click', () => {
+      state.cart = [];
+      renderCart();
+    });
+
+    (async function init() {
+      await Promise.all([loadCategories(), loadFulfillment()]);
+      renderCart();
+    })();
+  </script>
+</body>
+</html>
